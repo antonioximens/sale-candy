@@ -16,7 +16,8 @@ datasource db {
 // Definir as tabelas do bando de dados
 //user - product - order - order_item
 
-// Enum para definir tipo de usuario na tabela "user"
+// Tabela User: 
+// Enum para definir tipo de usuario na tabela User
 enum RoleTypeUser {
   ADMIN
   STANDARD
@@ -31,4 +32,24 @@ model User {
   role      RoleTypeUser @default(STANDARD)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+}
+
+// Tabela Order: 
+// Enum para definir um status na tabela Order
+enum OrderStatus {
+  PENDING // Pedido criado, aguardando pagamento ou processamento
+  PROCESSING // Pagamento confirmado, separando produtos/preparando
+  SHIPPED // Pedido enviado (com rastreio, se aplicável)
+  DELIVERED // Pedido entregue ao cliente
+  CANCELLED // Pedido cancelado antes da entrega
+  RETURNED // Produto devolvido após entrega
+}
+
+// Tabela Order
+model Order {
+  id          Int         @id @default(autoincrement())
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }

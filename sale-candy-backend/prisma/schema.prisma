@@ -14,16 +14,21 @@ datasource db {
 }
 
 // Definir as tabelas do bando de dados
-//user - product - order - item_oreder
+//user - product - order - order_item
+
+// Enum para definir tipo de usuario na tabela "user"
 enum RoleTypeUser {
-  Admin
-  Standard
+  ADMIN
+  STANDARD
 }
 
-model Users {
-  id       Int          @id @default(autoincrement())
-  name     String       @db.VarChar(255)
-  email    String       @unique @db.VarChar(255)
-  password String       @db.VarChar(255)
-  role     RoleTypeUser @default(Standard)
+// Tabela User
+model User {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(150)
+  email     String       @unique @db.VarChar(50)
+  password  String       @db.VarChar(255)
+  role      RoleTypeUser @default(STANDARD)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }

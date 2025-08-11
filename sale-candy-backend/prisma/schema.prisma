@@ -27,11 +27,12 @@ enum RoleTypeUser {
 model User {
   id        Int          @id @default(autoincrement())
   name      String       @db.VarChar(150)
-  email     String       @unique @db.VarChar(50)
-  password  String       @db.VarChar(255)
-  role      RoleTypeUser @default(STANDARD)
+  email     String       @unique @db.VarChar(50) // Email é unico
+  password  String       @db.VarChar(255) // Valor grande para senha hash
+  role      RoleTypeUser @default(STANDARD) // Usuario começa padrão
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+  orders    Order[] // um usuario pode ter varios pedidos
 }
 
 // Tabela Order: 
@@ -48,28 +49,36 @@ enum OrderStatus {
 // Tabela Order
 model Order {
   id          Int         @id @default(autoincrement())
-  status      OrderStatus @default(PENDING)
-  totalAmount Decimal     @db.Decimal(10, 2)
+  status      OrderStatus @default(PENDING) // Status padrão é PENDING
+  totalAmount Decimal     @db.Decimal(10, 2) // Valor Decimal por ser moeda
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  userId      Int? // Referencia ao Id da tabela User
+  User        User?       @relation(fields: [userId], references: [id]) // cria a relação com o Usuario
+  items       OrderItem[] // Um pedido pode ter varios itens, faz referencia a OrderItem
 }
 
 // Tabela Product:
 model Product {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(150)
-  description String @db.Text  
-  price Decimal @db.Decimal(10,2)
-  stock Int @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int         @id @default(autoincrement())
+  name         String      @db.VarChar(150)
+  description  String      @db.Text
+  priceProduct Decimal     @db.Decimal(10, 2) // Valor Decimal por ser moeda
+  stock        Int         @default(0) // Estoque inicial é 0
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[] // Um pedido pode ter varios itens (OrderItem)
 }
 
 // Tabela OrderItem: 
 model OrderItem {
-  id Int @id @default(autoincrement())
-  quantity Int @default(1)
-  price Decimal @db.Decimal(10,2)
+  id        Int      @id @default(autoincrement())
+  quantity  Int      @default(1) // A quantidade minima é 1
+  price     Decimal  @db.Decimal(10, 2) // Valor Decimal por ser moeda
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  productId Int? // Referencia ao Id da tabela Product
+  Product   Product? @relation(fields: [productId], references: [id]) // cria a relação ocm Produto.(Product)
+  orderId   Int? // Referencia ao Id da tabela Order
+  Order     Order?   @relation(fields: [orderId], references: [id]) // cria a relação com pedido (Order)
 }

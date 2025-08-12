@@ -53,8 +53,8 @@ model Order {
   totalAmount Decimal     @db.Decimal(10, 2) // Valor Decimal por ser moeda
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  userId      Int? // Referencia ao Id da tabela User
-  User        User?       @relation(fields: [userId], references: [id]) // cria a relação com o Usuario
+  userId      Int  // Referencia ao Id da tabela User
+  user        User       @relation(fields: [userId], references: [id]) // cria a relação com o Usuario
   items       OrderItem[] // Um pedido pode ter varios itens, faz referencia a OrderItem
 }
 
@@ -77,8 +77,8 @@ model OrderItem {
   price     Decimal  @db.Decimal(10, 2) // Valor Decimal por ser moeda
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  productId Int? // Referencia ao Id da tabela Product
-  Product   Product? @relation(fields: [productId], references: [id]) // cria a relação ocm Produto.(Product)
-  orderId   Int? // Referencia ao Id da tabela Order
-  Order     Order?   @relation(fields: [orderId], references: [id]) // cria a relação com pedido (Order)
+  productId Int // Referencia ao Id da tabela Product
+  product   Product @relation(fields: [productId], references: [id]) // cria a relação ocm Produto.(Product)
+  orderId   Int // Referencia ao Id da tabela Order
+  Order     Order   @relation(fields: [orderId], references: [id]) // cria a relação com pedido (Order)
 }

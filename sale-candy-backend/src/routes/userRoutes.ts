@@ -18,6 +18,9 @@ const userController = new UserController(userService);
 //rotas
 router.get("/users", userController.index);
 router.get("/users/:email", userController.showById);
+router.post("/users", userController.create)
+router.put("/users/:id", userController.update)
+router.delete("/users/:id", userController.delete)
 
 // renomeando e colocando a importação
 export { router as userRoutes};

@@ -6,7 +6,7 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   // procura usuario, evitando redundancia
-  async verifyUser(id: number) {
+  private async verifyUser(id: number) {
     const userExists = await this.userRepository.findById(id);
     if (!userExists) throw new HttpError(404, "User not found!");
     return userExists;

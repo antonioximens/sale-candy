@@ -8,23 +8,23 @@ import { OrderDTO, OrderRepository } from "../OrderRepository";
 import { prisma } from "../../../prisma/database";
 
 export class OrderRepositoryPrisma implements OrderRepository {
-  findAll(): Promise<Order[]> {
-    return prisma.order.findMany();
+  async findAll(): Promise<Order[]> {
+    return await prisma.order.findMany();
   }
 
-  findById(id: number): Promise<Order | null> {
-    return prisma.order.findUnique({ where: { id } });
+  async findById(id: number): Promise<Order | null> {
+    return await prisma.order.findUnique({ where: { id } });
   }
-  create(params: OrderDTO): Promise<Order> {
-    return prisma.order.create({ data: params });
+  async create(params: OrderDTO): Promise<Order> {
+    return await prisma.order.create({ data: params });
   }
-  update(id: number, params: Partial<OrderDTO>): Promise<Order | null> {
-    return prisma.order.update({
+  async update(id: number, params: Partial<OrderDTO>): Promise<Order | null> {
+    return await prisma.order.update({
       where: { id },
       data: params,
     });
   }
-  delete(id: number): Promise<Order | null> {
-    return prisma.order.delete({ where: { id } });
+  async delete(id: number): Promise<Order | null> {
+    return await prisma.order.delete({ where: { id } });
   }
 }

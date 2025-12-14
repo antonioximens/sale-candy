@@ -1,53 +1,58 @@
+import bcrypt from "bcrypt";
 import { HttpError } from "../errors/Http-Error";
 import { CreateUserDTO, UserRepository } from "../repositories/UserRepository";
 
 export class UserService {
-  // injeção de dependencia, pegando os dados do UserRepository
   constructor(private readonly userRepository: UserRepository) {}
 
-  // procura usuario, evitando redundancia
+  // método privado reutilizável para verificar existência do usuário
   private async verifyUser(id: number) {
-    const userExists = await this.userRepository.findById(id);
-    if (!userExists) throw new HttpError(404, "User not found!");
-    return userExists;
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new HttpError(404, "User not found");
+    return user;
   }
 
-  // retorna todos os usuarios
+  // lista todos os usuários
   async getAllUsers() {
-    return await this.userRepository.findAll();
+    return this.userRepository.findAll();
   }
 
-  // verifica se o email existe, caso nao lança erro
+  // busca por email
   async getFindByEmail(email: string) {
-    const emailExists = await this.userRepository.findByEmail(email);
-    if (!emailExists) throw new HttpError(404, "E-mail not found!");
-    return emailExists;
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) throw new HttpError(404, "E-mail not found");
+    return user;
   }
 
-  // procurnado por id
-  async getFindById(id: number) {
-    // procura o user pelo id
-    // nao encontrou lança erro
-    return await this.verifyUser(id);
-  }
-
-  // criação de um usuario, lembrando que valor inicial é standard
+  // cria usuário
   async createUser(params: CreateUserDTO) {
-    // aqui não há necessidade de verificar se está sem valor
-    // por conta que no defalut do prisma coloquei "STANDARD"
+    // verifica se email já existe
     const emailExists = await this.userRepository.findByEmail(params.email);
-    if (emailExists) throw new HttpError(409, "found email conflict");
-    return await this.userRepository.create(params);
+    if (emailExists) throw new HttpError(409, "Email already exists");
+
+    // hash da senha (REGRA DE NEGÓCIO)
+    const hashedPassword = await bcrypt.hash(params.password, 10);
+
+    return this.userRepository.create({
+      ...params,
+      password: hashedPassword,
+      // role vem default do Prisma como STANDARD
+    });
   }
-  // atualizando dados do usuario
+
+  // atualização
   async updateUser(id: number, params: Partial<CreateUserDTO>) {
     await this.verifyUser(id);
-    return await this.userRepository.update(id, params);
+    // se o usuário estiver alterando a senha
+    if (params.password) {
+      params.password = await bcrypt.hash(params.password, 10);
+    }
+    return this.userRepository.update(id, params);
   }
 
-  // deletando um usuario
+  // remoção
   async deleteUser(id: number) {
     await this.verifyUser(id);
-    return await this.userRepository.delete(id);
+    return this.userRepository.delete(id);
   }
 }
